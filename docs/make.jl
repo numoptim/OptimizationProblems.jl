@@ -5,6 +5,15 @@ makedocs(
     sitename="OptimizationProblems Documentation",
     pages = [
         "Overview" => "index.md",
+        "Manual" => [
+            "Quick Start" => "manual/linear_regression.md",
+            "Generalized Linear Models" => "manual/glm.md",
+            "Quasi-likelihood Models" => "manual/ql.md",
+        ],
+        "API" => [
+            "Genearlized Linear Models" => "api/glm.md",
+            "Quasi-Likelihood Models" => "api/ql.md",
+        ]
     ]
 )
 
