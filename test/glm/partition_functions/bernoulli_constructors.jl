@@ -1,4 +1,4 @@
-module TestBernoulli
+module TestBernoulliConstructor
 
 using Test, OptimizationProblems
 
