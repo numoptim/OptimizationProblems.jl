@@ -1,1 +1,2 @@
-glm/partition_functions/bernoulli.jl
+% Bernoulli Response GLMs
+glm/partition_functions/bernoulli_constructors.jl
