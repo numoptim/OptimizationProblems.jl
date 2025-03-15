@@ -99,78 +99,55 @@ end
 #     return store 
 # end
 
-# function allocate(
-#     ::T,
-#     data::GeneralizedLinearModel{R, F, Bernoulli};
-#     num_param::Int64,
-#     num_obs::Int64,
-#     gradient::Bool=true, 
-#     hessian::Bool=false,
-#     weights::Bool=false,
-#     residual::Bool=false,
-#     weighted_features::Bool=false,
-# ) where {T, R, F}
+function likelihood(
+    family::Bernoulli;
+    x::Vector{T}, 
+    resp::Bool,
+    feat::S where S<:AbstractVector
+) where T<:Real
+    η = dot(x, feat)
+    return T(-resp*η + log(1 + exp(η)))
+end
 
-#     store = Dict{Symbol, Array}()
-#     gradient && setindex!(store, :grad, zeros(T, num_param))
-#     hessian && setindex!(store, :hess, zeros(T, num_param, num_param))
-#     weights && setindex!(store, :weights, zeros(T, num_obs, num_param))
-#     residual && setindex!(store, :residual, zeros(T, num_obs))
-#     weighted_features && setindex!(store, :jacobian, zeros(T, num_obs, num_param))
+function score!(
+    family::Bernoulli;
+    gradient::Vector{T},
+    x::Vector{T},
+    resp::Bool,
+    feat::S where S<:AbstractVector, 
+    params::AbstractVector{Int64}=eachindex(x)
+) where T
+    η = dot(x, feat)
+    view(gradient, params)  .-= (resp - 1/(1+exp(-η))) * view(feat, params)
+    return
+end
 
-#     return store
-# end
+function likelihoodscore!(
+    family::Bernoulli;
+    gradient::Vector{T},
+    x::Vector{T},
+    resp::Bool,
+    feat::S where S<:AbstractVector, 
+    params::AbstractVector{Int64}=eachindex(x)
+) where T
+    η = dot(x, feat)
+    view(gradient, params) .-= (resp - 1/(1+exp(-η))) * view(feat, params)
+    return T(-resp*η + log(1+exp(η)))
+end
 
-# function likelihood(
-#     family::Bernoulli;
-#     x::Vector{T} where T, 
-#     resp::Bool,
-#     feat::S where S<:AbstractVector
-# )
-#     η = dot(x, feat)
-#     return T(-resp*η + log(1 + exp(η)))
-# end
-
-# function score!(
-#     family::Bernoulli;
-#     gradient::Vector{T},
-#     x::Vector{T},
-#     resp::Bool,
-#     feat::S where S<:AbstractVector, 
-#     params::AbstractVector{Int64}=eachindex(x)
-# ) where T
-#     η = dot(x, feat)
-#     gradient -= (resp - 1/(1+exp(η))) * view(feat, params)
-#     return
-# end
-
-# function likelihoodscore!(
-#     family::Bernoulli;
-#     gradient::Vector{T},
-#     x::Vector{T},
-#     resp::Bool,
-#     feat::S where S<:AbstractVector, 
-#     params::AbstractVector{Int64}=eachindex(x)
-# ) where T
-#     η = dot(x, feat)
-#     d = 1 + exp(η)
-#     gradient -= (resp - 1/d) * view(feat, params)
-#     return T(-resp*η + log(d))
-# end
-
-
-# function information!(
-#     family::Bernoulli;
-#     hessian::Matrix{T},
-#     x::Vector{T},
-#     resp:Bool,
-#     feat::S where S<:AbstractVector,
-#     params::AbstractVector{Int64}=eachindex(x)
-# ) where T
-#     μ = 1/(1 + exp(dot(x, view(feat, i, :))))
-#     hessian .+= μ * (1 - μ) * view(feat, params) * transpose(view(feat, params))
-#     return
-# end
+function information!(
+    family::Bernoulli;
+    hessian::Matrix{T},
+    x::Vector{T},
+    resp::Bool,
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where T
+    μ = 1/(1 + exp(dot(x, feat)))
+    view(hessian, params, params) .+= μ * (1 - μ) * view(feat, params) * 
+        transpose(view(feat, params))
+    return
+end
 
 # function partition_sqrt_weights!(
 #     family::Bernoulli;
