@@ -4,7 +4,9 @@ authors = ["Vivak Patel <vp314@users.noreply.github.com>"]
 version = "0.1.0"
 
 [deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 OptimizationModels = "1e8ba084-2b82-410e-94da-52931dd80093"
 
 [compat]
+LinearAlgebra = "1.11.0"
 OptimizationModels = "0.1.0"
