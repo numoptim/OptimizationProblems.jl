@@ -149,49 +149,36 @@ function information!(
     return
 end
 
-# function partition_sqrt_weights!(
-#     family::Bernoulli;
-#     sqrt_weights::Vector{T},
-#     x::Vector{T},
-#     resp::Bool,
-#     feat::F where F<:AbstractMatrix
-# ) where T
-#     for i in eachindex(sqrt_weights)
-#         μ = 1/(1 + exp(dot(x, view(feat, i, :))))
-#         sqrt_weights[i] = sqrt(μ*(1-μ))
-#     end
+function gnn_weight(
+    family::Bernoulli;
+    x::Vector{T},
+    resp::Bool,
+    feat::S where S<:AbstractVector
+) where T
+    μ = 1/(1 + exp(dot(x, feat)))
+    return sqrt(μ*(1-μ))
+end
 
-#     return
-# end
+function gnn_constant(
+    family::Bernoulli;
+    x::Vector{T},
+    resp::Bool,
+    feat::S where S<:AbstractVector,
+    weight::T
+) where T
+    μ = 1/(1 + exp(-dot(x, feat)))
+    return (resp - μ) / weight
+end
 
-# function constant_vector!(
-#     resid::T,
-#     family::Bernoulli;
-#     x::T,
-#     resp::R where R<:AbstractVector, 
-#     feat::F where F<:AbstractMatrix
-# ) where {T<:AbstractVector}
-    
-#     for i in eachindex(resid)
-#         μ = 1/(1 + exp(dot(x, view(feat, i, :))))
-#         resid[i] .= (resp[i] - μ) / (sqrt(μ*(1-μ)))
-#     end
 
-#     return
-# end
-
-# function coefficient_matrix!(
-#     w_feat::W where W<:AbstractMatrix,
-#     family::Bernoulli;
-#     x::T,
-#     feat::F where F<:AbstractMatrix,
-#     params::Union{Base.OneTo{Int64},Vector{Int64}}=eachindex(x)
-# )
-#     for i in axes(w_feat, 1)
-#         μ = 1/(1 + exp(dot(x, view(feat, i, :))))
-#         sqrt_weight = sqrt(μ*(1-μ))
-#         w_feat[i,:] .= sqrt_weight*view(feat, i, params)
-#     end
-
-#     return
-# end
+function gnn_coefficient!(
+    family::Bernoulli;
+    weighted_feat::S,
+    x::Vector{T},
+    feat::S,
+    weight::T,
+    params::AbstractVector{Int64}=eachindex(x)
+) where {S<:AbstractVector,T}
+    view(weighted_feat, params) .= weight .* view(feat, params)
+    return nothing 
+end
