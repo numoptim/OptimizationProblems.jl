@@ -76,29 +76,6 @@ function LogisticRegression(;resp::BitVector, feat::Matrix{T},
     )
 end
 
-# function allocate(
-#     ::T,
-#     data::GeneralizedLinearModel{R, F, Bernoulli};
-#     gradient::Bool=true, 
-#     hessian::Bool=false,
-#     weights::Bool=false,
-#     residual::Bool=false,
-#     weighted_features::Bool=false,
-# ) where {T, R, F}
-
-#     num_param = data.num_param
-#     num_obs = data.num_obs
-
-#     store = Dict{Symbol, Array}()
-#     gradient && setindex!(store, :grad, zeros(T, num_param))
-#     hessian && setindex!(store, :hess, zeros(T, num_param, num_param))
-#     weights && setindex!(store, :weights, zeros(T, num_obs, num_param))
-#     residual && setindex!(store, :residual, zeros(T, num_obs))
-#     weighted_features && setindex!(store, :jacobian, zeros(T, num_obs, num_param))
-
-#     return store 
-# end
-
 function likelihood(
     family::Bernoulli;
     x::Vector{T}, 
