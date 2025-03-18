@@ -53,28 +53,91 @@ struct GeneralizedLinearModel{R, F, G<:GLMFamily} <: OptimizationProblem
     family::G
 end
 
-# Logistic Regression 
-include("partition_functions/bernoulli.jl")
+# Specific GLM Families 
+include("partition_functions/bernoulli.jl") # Bernoulli 
 
 
-function obj(
-    x::Vector{T}; 
-    problem::GeneralizedLinearModel, 
-    store::Dict{Symbol, Array},
+# Preallocation
+"""
+    allocate(
+        problem::GeneralizedLinearModel;
+        obj::Bool=true, 
+        grad::Bool=true,
+        hess::Bool=false,
+        weights::Bool=false,
+        residual::Bool=false,
+        jacobian::Bool=false,
+    )
+
+Creates a dictionary with keys of type `Symbol` and with values of type `Any`.
+    The dictionary's values depend on the key.
+
+- If `obj==true`, then a pair with symbol `:obj` and a scalar value is added 
+    to the dictionary.
+- If `grad==true`, then a pair with symbol `:grad` and a zero vector of the parameter 
+    dimension is added to the dictionary. 
+- If `hess==true`, then a pair with symbol `:hess` and a zero matrix of the parameter 
+    dimension by parameter dimension is added to the dictionary. 
+- If `weights==true`, then a pair with symbol `:weights` 
+"""
+#TODO: Finish wrigiting allocation docstring
+function allocate(
+    problem::GeneralizedLinearModel;
+    obj::Bool=true, 
+    grad::Bool=true,
+    hess::Bool=false,
+    weights::Bool=false,
+    residual::Bool=false,
+    jacobian::Bool=false,
+)
+
+    # Assumes element types are the same as the feature 
+    type = eltype(problem.feat)
+
+    # Initialize Empty Store 
+    store = Dict{Symbol,Any}()
+
+    # For each object to be stored, add to store 
+    obj && push!(store, :obj=> type(0.0))
+    grad && push!(store, :grad=> zeros(type, problem.num_param))
+    hess && push!(store, :hess=> zeros(type, problem.num_param, problem.num_param))
+    weights && push!(store, :weights=> zeros(type, problem.num_obs))
+    residual && push!(store, :residual=> zeros(type, problem.num_obs))
+    jacobian && push!(store, :jacobian=> zeros(type, problem.num_obs, problem.num_param))
+
+    return store 
+end
+
+"""
+    obj!(problem::GeneralizedLinearModel; store::Dict{Symbol, Any},
+        x::Vector{T}, reset::Bool=true, batch::AbstractVector{Int64}=
+        Base.OneTo(problem.num_obs)
+    ) where T
+
+Updates the value of the objective function stored in `store[:obj]` for 
+    the problem specified in `problem` using the entries specified in 
+    `batch`. If `reset` is `true`, then the value of the objective is 
+    first set to zero. Returns `nothing`.
+"""
+function obj!(
+    problem::GeneralizedLinearModel;
+    store::Dict{Symbol, Any},
+    x::Vector{T},
+    reset::Bool=true, 
     batch::AbstractVector{Int64}=Base.OneTo(problem.num_obs)
 ) where T
     
     # Increment Objective Counter  
-    increment!(problem.counter[:obj])  
+    increment_batch!(problem.counter[:obj], size=length(batch))  
     
     # Compute Objective 
-    o = 0
-    for i in Base.OneTo(problem.num_obs)
-        o += likelihood(problem.family, x=x, resp=problem.resp[i],
+    reset && store[:obj] = T(0.0)
+    for i in batch
+        store[:obj] += likelihood(problem.family, x=x, resp=problem.resp[i],
             feat=view(problem.feat, i, :))
     end
 
-    return o
+    return nothing 
 end
 
 function grad!(
