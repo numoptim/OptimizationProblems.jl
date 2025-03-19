@@ -140,27 +140,39 @@ function obj!(
     return nothing 
 end
 
+"""
+    grad!(problem::GeneralizedLinearModel; store::Dict{Symbol, Any},
+        x::Vector{T}, reset::Bool=true, batch::AbstractVector{Int64}=
+        Base.OneTo(problem.num_obs), block::AbstractVector{Int64}=eachindex(x)
+    ) where T
+
+Updates the value of the gradient function stored in `store[:grad]` for the 
+    problem specified in `problem` using the observation specified in 
+    `batch` and only updates the entries in `block`. If `reset==true`,
+    sets `store[:grad][block]` to zero. 
+"""
 function grad!(
-    x::Vector{T};
-    problem::GeneralizedLinearModel,
-    store::Dict{Symbol, Array},
-    params::AbstractVector{Int64}=eachindex(x)
+    problem::GeneralizedLinearModel;
+    store::Dict{Symbol, Any},
+    x::Vector{T},
+    reset::Bool=true,
+    batch::AbstractVector{Int64}=Base.OneTo(problem.num_obs),
+    block::AbstractVector{Int64}=eachindex(x)
 ) where T
     
     # Increment Gradient Counter(s)
-    params == Base.OneTo(problem.num_param) ?
-        increment!(problem.counter[:grad]) :
-        increment!(problem.counter[:grad_inc_param], size=length(params))
+    increment_batch!(problem.counter[:grad], size=length(batch))
+    increment_block!(problem.counter[:grad], size=length(block))
     
     # Compute Gradient 
-    fill!(store[:grad], T(0.0))
-    for i in Base.OneTo(problem.num_obs)
+    reset && fill!(view(store[:grad], block), T(0.0))
+    for i in batch
         score!(problem.family, gradient=store[:grad], x=x, 
             resp=problem.resp[i], feat=view(problem.feat, i, :),
-            params=params)
+            params=block)
     end
 
-    return 
+    return nothing
 end
 
 #TODO: objgrad!
