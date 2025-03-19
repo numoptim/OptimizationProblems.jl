@@ -69,7 +69,7 @@ include("partition_functions/bernoulli.jl") # Bernoulli
         jacobian::Bool=false,
     )
 
-Creates a dictionary with keys of type `Symbol` and with values of type `Any`.
+Creates and returns a dictionary with keys of type `Symbol` and with values of type `Any`.
     The dictionary's values depend on the key.
 
 - If `obj==true`, then a pair with symbol `:obj` and a scalar value is added 
@@ -78,9 +78,13 @@ Creates a dictionary with keys of type `Symbol` and with values of type `Any`.
     dimension is added to the dictionary. 
 - If `hess==true`, then a pair with symbol `:hess` and a zero matrix of the parameter 
     dimension by parameter dimension is added to the dictionary. 
-- If `weights==true`, then a pair with symbol `:weights` 
+- If `weights==true`, then a pair with symbol `:weights` and a zero vector of observation 
+    dimension is added to the dictionary. 
+- If `residual==true`, then a pair with symbol `:residual` and a zero vector of 
+    observation dimension is added to the dictionary. 
+- If `jacobian==true`, then a pair with symbol `:jacobian` and a zero matrix of the 
+    number of observations by the number of parameters is added to the dictionary. 
 """
-#TODO: Finish wrigiting allocation docstring
 function allocate(
     problem::GeneralizedLinearModel;
     obj::Bool=true, 
