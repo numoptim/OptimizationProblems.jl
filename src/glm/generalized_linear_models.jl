@@ -128,7 +128,8 @@ function obj!(
 ) where T
     
     # Increment Objective Counter  
-    increment_batch!(problem.counter[:obj], size=length(batch))  
+    increment_batch!(problem.counter[:obj], size=length(batch)) 
+    increment_block!(problem.counter[:obj], size=problem.num_param) 
     
     # Compute Objective 
     reset && (store[:obj] = T(0.0))
@@ -149,7 +150,7 @@ end
 Updates the value of the gradient function stored in `store[:grad]` for the 
     problem specified in `problem` using the observation specified in 
     `batch` and only updates the entries in `block`. If `reset==true`,
-    sets `store[:grad][block]` to zero. 
+    sets `store[:grad][block]` to zero. Returns `nothing`.
 """
 function grad!(
     problem::GeneralizedLinearModel;
@@ -175,7 +176,50 @@ function grad!(
     return nothing
 end
 
-#TODO: objgrad!
+"""
+    objgrad!(problem::GeneralizedLinearModel; store::Dict{Symbol, Any},
+        x::Vector{T}, reset::Bool=true, batch::AbstractVector{Int64}=
+        Base.OneTo(problem.num_obs), block::AbstractVector{Int64}=eachindex(x)
+    ) where T
+
+Updates the objective value and gradient value in `store` for the problem 
+    specified in `problem` using the observations specified in `batch`.
+    If `block` is specified, then, for the gradient update, 
+    only the values in `store[:grad][block]`. `block` does not impact the 
+    objective update. If `reset==true`, then the objective and 
+    `store[:grad][block]` are set to zeros. Returns `nothing`.
+"""
+function objgrad!(
+    problem::GeneralizedLinearModel;
+    store::Dict{Symbol, Any},
+    x::Vector{T},
+    reset::Bool=true,
+    batch::AbstractVector{Int64}=Base.OneTo(problem.num_obs),
+    block::AbstractVector{Int64}=eachindex(x)
+) where T
+
+    # Increment Objective and Gradient Counters 
+    increment_batch!(problem.counter[:obj], size=length(batch))
+    increment_block!(problem.counter[:obj], size=problem.num_param)
+    increment_batch!(problem.counter[:grad], size=length(batch))
+    increment_block!(problem.counter[:grad], size=length(block))
+
+    # Reset 
+    if reset
+        store[:obj] = T(0.0)
+        fill!(view(store[:grad], block), T(0.0))
+    end
+
+    # Compute objective and gradient
+    for i in batch
+        store[:obj] += likelihoodscore!(problem.family, gradient=store[:grad],
+            x=x, resp=problem.resp[i], feat=view(problem.feat, i, :), 
+            params=block)
+    end
+
+    return nothing
+end
+
 #TODO: hess!
 #TODO: jacobian!
 #TODO: residual?
