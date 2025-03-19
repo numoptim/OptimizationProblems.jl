@@ -131,7 +131,7 @@ function obj!(
     increment_batch!(problem.counter[:obj], size=length(batch))  
     
     # Compute Objective 
-    reset && store[:obj] = T(0.0)
+    reset && (store[:obj] = T(0.0))
     for i in batch
         store[:obj] += likelihood(problem.family, x=x, resp=problem.resp[i],
             feat=view(problem.feat, i, :))
