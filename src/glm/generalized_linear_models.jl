@@ -115,7 +115,7 @@ end
     ) where T
 
 Updates the value of the objective function stored in `store[:obj]` for 
-    the problem specified in `problem` using the entries specified in 
+    the problem specified in `problem` using the observations specified in 
     `batch`. If `reset` is `true`, then the value of the objective is 
     first set to zero. Returns `nothing`.
 """
