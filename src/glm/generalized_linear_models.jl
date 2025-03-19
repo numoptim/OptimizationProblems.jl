@@ -220,6 +220,43 @@ function objgrad!(
     return nothing
 end
 
-#TODO: hess!
+
+"""
+    hess!(problem::GeneralizedLinearModel, store::Dict{Symbol, Any},
+        x::Vector{T}, reset::Bool=true, batch::AbstractVector{Int64}=
+        Base.OneTo(problem.num_obs), block::AbstractVector{Int64}=eachindex(x)
+    ) where T
+
+Updates the hessian in `store[:hess]` for the problem specified in `problem`
+    using the observations specified in `batch`. If `block` is specified 
+    then only the entries of the sub-array, `store[:hess][block, block]`,
+    are updated. If `reset==true`, then the entries of `store[:hess][block,block]`
+    are first set to zero. Returns `nothing`.
+"""
+function hess!(
+    problem::GeneralizedLinearModel,
+    store::Dict{Symbol, Any},
+    x::Vector{T},
+    reset::Bool=true,
+    batch::AbstractVector{Int64}=Base.OneTo(problem.num_obs),
+    block::AbstractVector{Int64}=eachindex(x)
+) where T
+
+    # Increment Hessian Counters 
+    increment_batch!(problem.counter[:hess], size=length(batch))
+    increment_block!(problem.counter[:hess], size=length(block))
+
+    # Compute hessian 
+    reset && fill!(view(store[:hess], block, block), T(0.0))
+    for i in batch 
+        information!(problem.family, hessian=store[:hess], x=x,
+            resp=problem.resp[i], feat=view(problem.feat, i, :),
+            params=block 
+        )
+    end
+
+    return nothing 
+end
+
 #TODO: jacobian!
 #TODO: residual?
