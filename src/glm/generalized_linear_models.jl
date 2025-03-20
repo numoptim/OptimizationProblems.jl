@@ -61,6 +61,7 @@ include("partition_functions/bernoulli.jl") # Bernoulli
 """
     allocate(
         problem::GeneralizedLinearModel;
+        type::DataType=Float64,
         obj::Bool=true, 
         grad::Bool=true,
         hess::Bool=false,
@@ -69,24 +70,34 @@ include("partition_functions/bernoulli.jl") # Bernoulli
         jacobian::Bool=false,
     )
 
-Creates and returns a dictionary with keys of type `Symbol` and with values of type `Any`.
-    The dictionary's values depend on the key.
+Allocates storage necessary in a `Dict` for calculating objective information to reduce 
+    allocations during runtime. 
 
-- If `obj==true`, then a pair with symbol `:obj` and a scalar value is added 
-    to the dictionary.
-- If `grad==true`, then a pair with symbol `:grad` and a zero vector of the parameter 
-    dimension is added to the dictionary. 
-- If `hess==true`, then a pair with symbol `:hess` and a zero matrix of the parameter 
-    dimension by parameter dimension is added to the dictionary. 
-- If `weights==true`, then a pair with symbol `:weights` and a zero vector of observation 
-    dimension is added to the dictionary. 
-- If `residual==true`, then a pair with symbol `:residual` and a zero vector of 
-    observation dimension is added to the dictionary. 
-- If `jacobian==true`, then a pair with symbol `:jacobian` and a zero matrix of the 
-    number of observations by the number of parameters is added to the dictionary. 
+# Arguments 
+- `problem::GeneralizedLinearModel`, specifies the problem that is being considered
+- `type::DataType`, specifies the target `DataType` for all calculations. Defaults to  
+    `Float64`.
+- `obj::Bool`, if `true` adds a key `:obj` to the storage dictionary with value `type(0.0)`.
+    Otherwise, does nothing to the storage dictionary. 
+- `grad::Bool`, if `true` adds a key `:grad` to the storage dictionary with value 
+    `zeros(type, problem.num_param)`. Otherwise, does nothing to storage dictionary. 
+- `hess::Bool`, if `true` adds a key `:hess` to the storage dictionary with value 
+    `zeros(type, problem.num_param, problem.num_param)`. Otherwise, does nothing to 
+    storage dictionary. 
+- `weights::Bool`, if `true` adds a key `:weights` to the storage dictionary with value 
+    `zeros(type, problem.num_obs)`. Otherwise, does nothing to storage dictionary. 
+- `residual::Bool`, if `true` adds a key `:residual` to the storage dictionary with value 
+    `zeros(type, problem.num_obs)`. Otherwise, does nothing to storage dictionary.
+- `jacobian::Bool`, if `true` adds a key `:jacobian` to the storage dictionary with value 
+    `zeros(type, problem.num_obs, num_param)`. Otherwise, does nothign to storage
+    dictionary. 
+
+# Returns 
+- Object of type `Dict{Symbol, Any}`.
 """
 function allocate(
     problem::GeneralizedLinearModel;
+    type::DataType=Float64,
     obj::Bool=true, 
     grad::Bool=true,
     hess::Bool=false,
@@ -94,9 +105,6 @@ function allocate(
     residual::Bool=false,
     jacobian::Bool=false,
 )
-
-    # Assumes element types are the same as the feature 
-    type = eltype(problem.feat)
 
     # Initialize Empty Store 
     store = Dict{Symbol,Any}()
