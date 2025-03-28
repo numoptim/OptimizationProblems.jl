@@ -140,8 +140,8 @@ function obj!(
 ) where T
     
     # Increment Objective Counter  
-    increment_batch!(problem.counter[:obj], size=length(batch)) 
-    increment_block!(problem.counter[:obj], size=problem.num_param) 
+    increment_batch!(problem.counters[:obj], size=length(batch)) 
+    increment_block!(problem.counters[:obj], size=problem.num_param) 
     
     # Compute Objective 
     reset && (store[:obj] = T(0.0))
@@ -174,8 +174,8 @@ function grad!(
 ) where T
     
     # Increment Gradient Counter(s)
-    increment_batch!(problem.counter[:grad], size=length(batch))
-    increment_block!(problem.counter[:grad], size=length(block))
+    increment_batch!(problem.counters[:grad], size=length(batch))
+    increment_block!(problem.counters[:grad], size=length(block))
     
     # Compute Gradient 
     reset && fill!(view(store[:grad], block), T(0.0))
@@ -211,10 +211,10 @@ function objgrad!(
 ) where T
 
     # Increment Objective and Gradient Counters 
-    increment_batch!(problem.counter[:obj], size=length(batch))
-    increment_block!(problem.counter[:obj], size=problem.num_param)
-    increment_batch!(problem.counter[:grad], size=length(batch))
-    increment_block!(problem.counter[:grad], size=length(block))
+    increment_batch!(problem.counters[:obj], size=length(batch))
+    increment_block!(problem.counters[:obj], size=problem.num_param)
+    increment_batch!(problem.counters[:grad], size=length(batch))
+    increment_block!(problem.counters[:grad], size=length(block))
 
     # Reset 
     if reset
@@ -255,8 +255,8 @@ function hess!(
 ) where T
 
     # Increment Hessian Counters 
-    increment_batch!(problem.counter[:hess], size=length(batch))
-    increment_block!(problem.counter[:hess], size=length(block))
+    increment_batch!(problem.counters[:hess], size=length(batch))
+    increment_block!(problem.counters[:hess], size=length(block))
 
     # Compute hessian 
     reset && fill!(view(store[:hess], block, block), T(0.0))
