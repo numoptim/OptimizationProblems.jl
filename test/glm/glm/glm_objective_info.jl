@@ -207,10 +207,12 @@ store = allocate(problem, type=type, hess=true)
     ######################################################
     # Objective-Gradient Function  
     ######################################################
+    #TODO: Implement tests for objective-gradient function 
 
     ######################################################
     # Hessian Function  
     ######################################################
+    #TODO: Implement tests for Hessian function
 
 end
 
