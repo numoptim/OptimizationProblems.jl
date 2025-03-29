@@ -207,7 +207,74 @@ store = allocate(problem, type=type, hess=true)
     ######################################################
     # Objective-Gradient Function  
     ######################################################
-    #TODO: Implement tests for objective-gradient function 
+
+    # Objective and Gradient calculation using full data, all parameters
+    let
+        store[:obj] = type(1) #Ensure values get overwritten
+        fill!(store[:grad], type(1)) #Ensure values get overwritten 
+
+        objgrad!(problem, store=store, x=x)
+
+        @test store[:obj] == num_obs 
+        @test store[:grad] == eachindex(x) .* num_obs
+        @test problem.counters[:obj].block_equivalent == 1
+        @test problem.counters[:obj].batch_equivalent == 1
+        @test problem.counters[:grad].block_equivalent == 1
+        @test problem.counters[:grad].batch_equivalent == 1
+
+        reset!(problem.counters[:obj])
+        reset!(problem.counters[:grad])
+    end
+
+    # Objective and Gradient calculation using subset of data, subset of parameters 
+    let block_size=5, batch_size=10,
+        block=randperm(num_param)[1:block_size],
+        batch=randperm(num_obs)[1:batch_size]
+
+        store[:obj] = type(1) #Ensure values get overwritten 
+        fill!(store[:grad], type(1)) #Ensure values get overwritten 
+
+        objgrad!(problem, store=store, x=x, batch=batch, block=block)
+
+        @test store[:obj] == batch_size 
+        @test store[:grad][block] == block .* batch_size
+        @test store[:grad][setdiff(eachindex(x), block)] ==
+            ones(type, num_param-block_size)
+        @test problem.counters[:obj].block_equivalent == 1
+        @test problem.counters[:obj].batch_equivalent == batch_size/num_obs 
+        @test problem.counters[:grad].block_equivalent == block_size/num_param 
+        @test problem.counters[:grad].batch_equivalent == batch_size/num_obs
+
+        reset!(problem.counters[:obj])
+        reset!(problem.counters[:grad])
+    end
+
+    # Full Objective and Gradient calcultion in pieces 
+    let block_size=5, batch_size=10,
+        block_1=randperm(num_param)[1:block_size],
+        block_2=setdiff(1:num_param, block_1),
+        batch_1=randperm(num_obs)[1:batch_size],
+        batch_2=setdiff(1:num_obs,batch_1)
+
+        store[:obj] = type(0)
+        fill!(store[:grad], type(0)) 
+
+        objgrad!(problem, store=store, x=x, batch=batch_1, block=block_1)
+        objgrad!(problem, store=store, x=x, batch=batch_2, block=block_1,
+            reset=false)
+        objgrad!(problem, store=store, x=x, batch=batch_1, block=block_2,
+            reset=false)
+        objgrad!(problem, store=store, x=x, batch=batch_2, block=block_2,
+            reset=false)
+
+        @test store[:obj] == num_obs * 2 #Full objective computed twice as blocks
+        # do not matter   
+        @test store[:grad] == (1:num_param) .* num_obs 
+        @test problem.counters[:obj].block_equivalent == 4
+        @test problem.counters[:obj].batch_equivalent == 2
+        @test problem.counters[:grad].block_equivalent == 2
+        @test problem.counters[:grad].batch_equivalent == 2
+    end
 
     ######################################################
     # Hessian Function  
