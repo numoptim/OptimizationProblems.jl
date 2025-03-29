@@ -246,7 +246,7 @@ Updates the hessian in `store[:hess]` for the problem specified in `problem`
     are first set to zero. Returns `nothing`.
 """
 function hess!(
-    problem::GeneralizedLinearModel,
+    problem::GeneralizedLinearModel;
     store::Dict{Symbol, Any},
     x::Vector{T},
     reset::Bool=true,
