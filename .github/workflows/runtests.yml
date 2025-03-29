@@ -30,12 +30,13 @@ jobs:
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@latest
         with: 
-          localregistry: https://github.com/numoptim/OptimizationModels.jl
+          localregistry: 
+            https://github.com/numoptim/OptimizationModels.jl
       - uses: julia-actions/julia-runtest@latest
       - uses: julia-actions/julia-processcoverage@v1
       - uses: codecov/codecov-action@v5
         with:
           files: lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: numoptim/OptimizationMethods.jl
+          slug: numoptim/OptimizationProblems.jl
           fail_ci_if_error: false
