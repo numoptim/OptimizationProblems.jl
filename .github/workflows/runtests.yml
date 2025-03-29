@@ -32,6 +32,7 @@ jobs:
         with: 
           localregistry: 
             https://github.com/numoptim/OptimizationModels.jl
+          git_cli: true
       - uses: julia-actions/julia-runtest@latest
       - uses: julia-actions/julia-processcoverage@v1
       - uses: codecov/codecov-action@v5
