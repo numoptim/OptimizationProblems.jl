@@ -36,7 +36,7 @@ second_der_lp(η) = 1/(1+exp(-η))*(1/(1+exp(η)))
 
                 @test typeof(val) == type 
                 @test isapprox(val, sqrt(second_der_lp(η)), atol=
-                    eps(type)*num_param)
+                    sqrt(eps(type)*num_param)) #unprincipled choice 
             end
 
             ######################################################
