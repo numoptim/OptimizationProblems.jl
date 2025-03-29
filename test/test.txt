@@ -1,6 +1,9 @@
+%
 % Genearlized Linear Model 
 glm/glm/glm_constructor.jl
 glm/glm/glm_allocate.jl
+glm/glm/glm_objective_info.jl
+%
 % Bernoulli Response GLMs
 glm/partition_functions/bernoulli_constructors.jl
 glm/partition_functions/bernoulli_partition.jl
