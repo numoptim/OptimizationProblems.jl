@@ -55,7 +55,7 @@ function information!(family::TestFamily;
 ) where T<:Real 
 
     val = view(eachindex(x), params)
-    view(hessian, params, params) .+= val * tranpose(val)
+    view(hessian, params, params) .+= val * transpose(val)
     return 
 end
 
@@ -249,7 +249,7 @@ store = allocate(problem, type=type, hess=true)
         reset!(problem.counters[:grad])
     end
 
-    # Full Objective and Gradient calcultion in pieces 
+    # Full Objective and Gradient calculation in pieces 
     let block_size=5, batch_size=10,
         block_1=randperm(num_param)[1:block_size],
         block_2=setdiff(1:num_param, block_1),
@@ -279,8 +279,58 @@ store = allocate(problem, type=type, hess=true)
     ######################################################
     # Hessian Function  
     ######################################################
-    #TODO: Implement tests for Hessian function
+    
+    # Full Hessian calculation
+    let v=eachindex(x)
+        fill!(store[:hess], type(1)) #Should be overwritten 
 
+        hess!(problem, store=store, x=x)
+
+        @test store[:hess] == (v * v') .* num_obs 
+        @test problem.counters[:hess].batch_equivalent == 1
+        @test problem.counters[:hess].block_equivalent == 1
+
+        reset!(problem.counters[:hess])
+    end
+
+    # Partial Hessian Calculation 
+    let block_size=5, batch_size=10, v=eachindex(x),
+        block_1=randperm(num_param)[1:block_size],
+        block_2=setdiff(v, block_1),
+        batch_1=randperm(num_param)[1:batch_size],
+        batch_2=setdiff(1:num_obs,batch_1)
+
+        fill!(store[:hess], type(1))
+
+        hess!(problem, store=store, x=x, batch=batch_1, block=block_1)
+
+        @test store[:hess][block_1,block_1] == (block_1 * block_1') .* batch_size
+        @test store[:hess][block_2,block_2] == ones(num_param-block_size, num_param-
+            block_size)
+        @test problem.counters[:hess].batch_equivalent == batch_size/num_obs 
+        @test problem.counters[:hess].block_equivalent == block_size/num_param
+
+        reset!(problem.counters[:hess])
+    end
+
+    # Sub-Matrix of Hessian calculation in pieces 
+    let block_size=5, batch_size=10, v=eachindex(x),
+        block_1=randperm(num_param)[1:block_size],
+        block_2=setdiff(v, block_1),
+        batch_1=randperm(num_param)[1:batch_size],
+        batch_2=setdiff(1:num_obs,batch_1)
+
+        fill!(store[:hess], type(1)) #Ensures values are reset 
+
+        hess!(problem, store=store, x=x, batch=batch_1, block=block_1)
+        hess!(problem, store=store, x=x, batch=batch_2, block=block_1, reset=false)
+        hess!(problem, store=store, x=x, batch=batch_1, block=block_2)
+        hess!(problem, store=store, x=x, batch=batch_2, block=block_2, reset=false)
+
+        @test store[:hess][block_1,block_1] == (block_1 * block_1') .* num_obs 
+        @test store[:hess][block_2,block_2] == (block_2 * block_2') .* num_obs 
+        @test store[:hess][block_1,block_2] == ones(type, length(block_1), length(block_2))
+        @test store[:hess][block_2,block_1] == ones(type, length(block_2), length(block_1))
+    end
 end
-
 end
