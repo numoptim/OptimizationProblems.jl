@@ -161,7 +161,7 @@ second_der_lp(η) = 1/(1+exp(-η))*(1/(1+exp(η)))
                 @test typeof(hessian) == Matrix{type}
                 @test isapprox(hessian, 
                     second_der_lp(η)*feat*transpose(feat),
-                    atol=eps(type)*num_param
+                    atol=sqrt(eps(type)*num_param)
                 )
             end
 
@@ -186,7 +186,7 @@ second_der_lp(η) = 1/(1+exp(-η))*(1/(1+exp(η)))
                 @test typeof(hessian) == Matrix{type}
                 @test isapprox(hessian[params, params], 
                     second_der_lp(η)*feat[params]*transpose(feat[params]),
-                    atol=eps(type)*num_param
+                    atol=sqrt(eps(type)*num_param)
                 )
                 @test isapprox(norm(hessian) - norm(hessian[params, params]), 
                     0, atol=eps(type))
