@@ -11,7 +11,7 @@ abstract type GLMFamily end
 A structure specifying a Bernoulli response GLM.
 """
 struct Bernoulli <: GLMFamily end 
-#struct Binomial <: GLMFamily end 
+struct Binomial <: GLMFamily end 
 #struct Exponential <: GLMFamily end 
 #struct MultinomialNominal <: GLMFamily end 
 #struct MultinomialOrdinal <: GLMFamily end 
@@ -55,6 +55,7 @@ end
 
 # Specific GLM Families 
 include("partition_functions/bernoulli.jl") # Bernoulli 
+include("partition_functions/binomial.jl") # Binomial 
 
 
 # Preallocation

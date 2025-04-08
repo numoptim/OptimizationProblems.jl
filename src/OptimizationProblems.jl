@@ -1,10 +1,10 @@
 module OptimizationProblems
 
-using OptimizationModels, LinearAlgebra
+using OptimizationModels, LinearAlgebra, Random, Distributions
 
 include("glm/generalized_linear_models.jl")
 
 export allocate, obj!, grad!, objgrad!, hess!
-export LogisticRegression
+export LogisticRegression, BinomialRegression
 
 end # module OptimizationProblems
