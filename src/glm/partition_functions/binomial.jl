@@ -111,3 +111,53 @@ function BinomialRegression(;resp::Vector{Tuple{Int64, Int64}}, feat::Matrix{T},
     )
 
 end
+
+function likelihood(
+    family::Binomial;
+    x::Vector{T},
+    resp::Tuple{Int64, Int64},
+    feat::S where S<:AbstractVector
+) where T<:Real
+    η = dot(x, feat)
+    return T(-resp[1]*η + resp[2]*log(1+exp(η))) # -y_i η + n_i log(1 + exp(η))
+end
+
+function score!(
+    family::Binomial;
+    gradient::Vector{T},
+    x::Vector{T},
+    resp::Tuple{Int64, Int64},
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where T<:Real
+    η = dot(x, feat)
+    # -(y_i - n_i/(1+exp(-η))) * feat
+    view(gradient, params) .-= (resp[1] - resp[2]/(1+exp(-η))) * view(feat, params)
+end
+
+function likelihoodscore!(
+    family::Binomial;
+    gradient::Vector{T},
+    x::Vector{T},
+    resp::Tuple{Int64, Int64},
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where T<:Real
+    η = dot(x, feat)
+    view(gradient, params) .-= (resp[1] - resp[2]/(1+exp(-η))) * view(feat, params)
+    return T(-resp[1]*η + resp[2]*log(1+exp(η)))
+end
+
+function information!(
+    family::Binomial;
+    hessian::Matrix{T},
+    x::Vector{T},
+    resp::Tuple{Int64, Int64},
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where T<:Real
+    μ = 1/(1 + exp(dot(x, feat)))
+    view(hessian, params, params) .+= (resp[2] * μ * (1-μ)) * view(feat, params) * 
+        transpose(view(feat, params))
+    return nothing 
+end
