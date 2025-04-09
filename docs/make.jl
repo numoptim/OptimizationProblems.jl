@@ -6,7 +6,7 @@ makedocs(
     pages = [
         "Overview" => "index.md",
         "Manual" => [
-            "Quick Start" => "manual/linear_regression.md",
+            "Quick Start" => "manual/quick_start.md",
             "Generalized Linear Models" => "manual/glm.md",
             "Quasi-likelihood Models" => "manual/ql.md",
         ],
