@@ -11,6 +11,11 @@ abstract type GLMFamily end
 A structure specifying a Bernoulli response GLM.
 """
 struct Bernoulli <: GLMFamily end 
+"""
+    Binomial <: GLMFamily 
+
+A structure specifying a Binomial response GLM.
+"""
 struct Binomial <: GLMFamily end 
 #struct Exponential <: GLMFamily end 
 #struct MultinomialNominal <: GLMFamily end 
