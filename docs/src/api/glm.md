@@ -13,3 +13,11 @@ LogisticRegression
 
 OptimizationProblems.Bernoulli
 ```
+
+# Binomial Regression Problem 
+
+```@docs 
+BinomialRegression
+
+OptimizationProblems.Binomial
+```
