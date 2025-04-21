@@ -21,7 +21,12 @@ struct Binomial <: GLMFamily end
 #struct MultinomialNominal <: GLMFamily end 
 #struct MultinomialOrdinal <: GLMFamily end 
 #struct NegativeBinomial <: GLMFamily end 
-#struct Normal <: GLMFamily end 
+"""
+    Normal <: GLMFamily 
+
+A structure specifying a linear model with Normally distributed responses. 
+"""
+struct Normal <: GLMFamily end 
 #struct Poisson <: GLMFamily end 
 
 """
@@ -60,7 +65,8 @@ end
 
 # Specific GLM Families 
 include("partition_functions/bernoulli.jl") # Bernoulli 
-include("partition_functions/binomial.jl") # Binomial 
+include("partition_functions/binomial.jl") # Binomial
+include("partition_functions/normal.jl")
 
 
 # Preallocation
