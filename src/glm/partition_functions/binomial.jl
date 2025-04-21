@@ -61,7 +61,7 @@ end
     BinomialRegression(;resp::Vector{Tuple{Int64, Int64}}, feat::Matrix{T},
         name::String="Binomial Regression") where T<:Real
 
-Constructors a Binomial Regression problem with the user-supplied response 
+Constructs a Binomial Regression problem with the user-supplied response 
     vector, `resp`, and feature matrix, `feat`.
     Each entry of `resp` should be a pair with the first number indicating 
     the number of successes and the second number indicating the number of 
@@ -133,6 +133,7 @@ function score!(
     η = dot(x, feat)
     # -(y_i - n_i/(1+exp(-η))) * feat
     view(gradient, params) .-= (resp[1] - resp[2]/(1+exp(-η))) * view(feat, params)
+    return nothing 
 end
 
 function likelihoodscore!(
