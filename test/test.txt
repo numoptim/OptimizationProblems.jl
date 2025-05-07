@@ -12,3 +12,7 @@ glm/partition_functions/bernoulli_ggn.jl
 % Binomial Response GLMs 
 glm/partition_functions/binomial_constructors.jl
 glm/partition_functions/binomial_partition.jl
+%
+% Normal Response GLMs 
+glm/partition_functions/normal_constructors.jl
+glm/partition_functions/normal_partition.jl

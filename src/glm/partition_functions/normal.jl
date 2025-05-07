@@ -24,10 +24,10 @@ function LinearRegression(::Type{T}; num_param::Int64, num_obs::Int64,
     ) : ones(T, num_obs, 1)
 
     # Generate Oracle Parameter 
-    β = rand(num_param) .- 0.5 
+    β = rand(T, num_param) .- T(0.5) 
 
     # Generate Responses 
-    resp = feat*β + σ*randn(num_obs)
+    resp = feat*β + σ*randn(T, num_obs)
 
     return GeneralizedLinearModel(
         name,
@@ -89,14 +89,14 @@ function likelihood(
 ) where T<:Real
 
     η = dot(x, feat)
-    return T(0.5*(resp - η)^2)
+    return T((resp - η)^2 / 2)
 end 
 
 function score!(
     family::Normal;
     gradient::Vector{T},
     x::Vector{T},
-    resp::Tuple{Int64, Int64},
+    resp::R where R<:Real,
     feat::S where S<:AbstractVector,
     params::AbstractVector{Int64}=eachindex(x)
 ) where T<:Real
@@ -110,20 +110,20 @@ function likelihoodscore!(
     family::Normal;
     gradient::Vector{T},
     x::Vector{T},
-    resp::Tuple{Int64, Int64},
+    resp::R where R<:Real,
     feat::S where S<:AbstractVector,
     params::AbstractVector{Int64}=eachindex(x)
 ) where T<:Real
     η = dot(x, feat)
     view(gradient, params) .-= (resp - η) * view(feat, params)
-    return T(0.5*(resp - η)^2)
+    return T((resp - η)^2 / 2)
 end
 
 function information!(
     family::Normal;
     hessian::Matrix{T},
     x::Vector{T},
-    resp::Tuple{Int64, Int64},
+    resp::R where R<:Real,
     feat::S where S<:AbstractVector,
     params::AbstractVector{Int64}=eachindex(x)
 ) where T<:Real

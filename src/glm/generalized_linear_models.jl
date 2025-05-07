@@ -66,7 +66,7 @@ end
 # Specific GLM Families 
 include("partition_functions/bernoulli.jl") # Bernoulli 
 include("partition_functions/binomial.jl") # Binomial
-include("partition_functions/normal.jl")
+include("partition_functions/normal.jl") # Normal
 
 
 # Preallocation
