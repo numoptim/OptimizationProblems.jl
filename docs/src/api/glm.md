@@ -21,3 +21,11 @@ BinomialRegression
 
 OptimizationProblems.Binomial
 ```
+
+# Linear Regression Problem 
+
+```@docs 
+LinearRegression
+
+OptimizationProblems.Normal
+```
