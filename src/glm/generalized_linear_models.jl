@@ -17,7 +17,12 @@ struct Bernoulli <: GLMFamily end
 A structure specifying a Binomial response GLM.
 """
 struct Binomial <: GLMFamily end 
-#struct Exponential <: GLMFamily end 
+"""
+    Exponential <: GLMFamily
+
+A structure specifying an Exponential response GLM.
+"""
+struct Exponential <: GLMFamily end 
 #struct MultinomialNominal <: GLMFamily end 
 #struct MultinomialOrdinal <: GLMFamily end 
 #struct NegativeBinomial <: GLMFamily end 
@@ -66,6 +71,7 @@ end
 # Specific GLM Families 
 include("partition_functions/bernoulli.jl") # Bernoulli 
 include("partition_functions/binomial.jl") # Binomial
+include("partition_functions/exponential.jl") # Exponential
 include("partition_functions/normal.jl") # Normal
 
 
