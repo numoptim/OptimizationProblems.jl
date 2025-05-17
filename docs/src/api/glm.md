@@ -6,7 +6,7 @@ OptimizationProblems.GeneralizedLinearModel
 OptimizationProblems.GLMFamily
 ```
 
-# Logistic Regression Problem
+# (Bernoulli) Logistic Regression Problem
 
 ```@docs
 LogisticRegression
@@ -20,6 +20,13 @@ OptimizationProblems.Bernoulli
 BinomialRegression
 
 OptimizationProblems.Binomial
+```
+
+# Exponential Regression Problem 
+```@docs 
+ExponentialRegression
+
+OptimizationProblems.Exponential
 ```
 
 # Linear Regression Problem 
