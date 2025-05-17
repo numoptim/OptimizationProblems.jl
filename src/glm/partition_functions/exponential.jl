@@ -93,6 +93,58 @@ function ExponentialRegression(;
     )
 end
 
-#TODO: Test Constructors 
-#TODO: Partition Function Implementations
-#TODO: Test Partition Function
+function likelihood(
+    family::Exponential;
+    x::Vector{T}, 
+    resp::R,
+    feat::S where S<:AbstractVector 
+) where {T<:Real, R<:Real}
+    η = dot(x, feat)
+    η > 0 && throw(DomainError("Linear effect must be non-positive"))
+    return T(-resp*η - log(-η))
+end
+
+function score!(
+    family::Exponential;
+    gradient::Vector{T},
+    x::Vector{T}, 
+    resp::R,
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where {T<:Real, R<:Real}
+    η = dot(x, feat)
+    η > 0 && throw(DomainError("Linear effect must be non-positive"))
+    view(gradient, params) .-= (resp + 1/η) * view(feat, params)
+    return 
+end
+
+function likelihoodscore!(
+    family::Exponential;
+    gradient::Vector{T},
+    x::Vector{T}, 
+    resp::R,
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where {T<:Real, R<:Real}
+    η = dot(x, feat)
+    η > 0 && throw(DomainError("Linear effect must be non-positive"))
+    view(gradient, params) .-= (resp + 1/η) * view(feat, params)
+    return T(-resp*η - log(-η))
+end
+
+function information!(
+    family::Exponential;
+    hessian::Matrix{T},
+    x::Vector{T}, 
+    resp::R,
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where {T<:Real, R<:Real}
+    η = dot(x, feat)
+    η > 0 && throw(DomainError("Linear effect must be non-positive"))
+    view(hessian, params, params) .+= (1/η^2) * view(feat, params) * 
+        transpose(view(feat, params))
+    return
+end
+
+#TODO: Implement GNN weight, constant and coefficient
