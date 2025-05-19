@@ -32,7 +32,12 @@ struct Exponential <: GLMFamily end
 A structure specifying a linear model with Normally distributed responses. 
 """
 struct Normal <: GLMFamily end 
-#struct Poisson <: GLMFamily end 
+"""
+    Poisson <: GLMFamily
+
+A structure specifying a Poisson response GLM.
+"""
+struct Poisson <: GLMFamily end 
 
 """
     GeneralizedLinearModel{R, F, G<:GLMFamily} <: OptimizationProblem
