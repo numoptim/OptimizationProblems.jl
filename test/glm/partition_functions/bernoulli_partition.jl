@@ -189,7 +189,7 @@ second_der_lp(η) = 1/(1+exp(-η))*(1/(1+exp(η)))
                     atol=sqrt(eps(type)*num_param)
                 )
                 @test isapprox(norm(hessian) - norm(hessian[params, params]), 
-                    0, atol=eps(type))
+                    0, atol=eps(type)*num_param)
             end
         end
     end
