@@ -32,7 +32,12 @@ struct Exponential <: GLMFamily end
 A structure specifying a linear model with Normally distributed responses. 
 """
 struct Normal <: GLMFamily end 
-#struct Poisson <: GLMFamily end 
+"""
+    Poisson <: GLMFamily
+
+A structure specifying a Poisson response GLM.
+"""
+struct Poisson <: GLMFamily end 
 
 """
     GeneralizedLinearModel{R, F, G<:GLMFamily} <: OptimizationProblem
@@ -73,6 +78,7 @@ include("partition_functions/bernoulli.jl") # Bernoulli
 include("partition_functions/binomial.jl") # Binomial
 include("partition_functions/exponential.jl") # Exponential
 include("partition_functions/normal.jl") # Normal
+include("partition_functions/poisson.jl") # Poisson
 
 
 # Preallocation

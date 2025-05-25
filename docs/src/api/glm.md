@@ -36,3 +36,11 @@ LinearRegression
 
 OptimizationProblems.Normal
 ```
+
+# Poisson Regression Problem
+
+```@docs 
+PoissonRegression 
+
+OptimizationProblems.Poisson
+```
