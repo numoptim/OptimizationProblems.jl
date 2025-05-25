@@ -69,9 +69,14 @@ function PoissonRegression(;resp::Vector{Int64}, feat::Matrix{T},
     num_obs, num_param = size(feat)
     num_obs < 1 && throw(ArgumentError("`num_obs` must be at least one."))
     num_param < 1 && throw(ArgumentError("`num_param` must be at least one."))
+    length(resp) != num_obs && throw(
+        DimensionMismatch(
+            "`resp` must have the same number of observations as `feat`."
+        )
+    )
 
     # Check response vector is non-negative
-    sum(resp .< 0) > 0 && throw(ArgumentError("`resp` must be non-negative."))
+    sum(resp .< 0) > 0 && throw(DomainError("`resp` must be non-negative."))
 
     return GeneralizedLinearModel(
         name,
