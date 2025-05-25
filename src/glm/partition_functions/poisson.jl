@@ -139,10 +139,10 @@ function information!(
     feat::S where S<:AbstractVector,
     params::AbstractVector{Int64}=eachindex(x)
 ) where T<:Real
-    η = dot(x, η)
+    η = dot(x, feat)
     view(hessian, params, params) .+= exp(η) * view(feat, params) * 
         transpose(view(feat, params))
-    return nothign 
+    return nothing 
 end
 
 #TODO: Implement GNN weight, constant and coefficient
