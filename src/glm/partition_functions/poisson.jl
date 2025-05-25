@@ -32,9 +32,10 @@ function PoissonRegression(::Type{T}; num_param::Int64, num_obs::Int64,
     # For each uniform RV, find the index for which the CDF exceeds the 
     # uniform RV 
     for i in 1:num_obs
-        ps = cumsum(exp(-λ[i]) .* [λ[i]^k / factorial(k) for k in 0:min(20, 2*λ[i])])
+        ceiling = min(20, round(Int64, 2 * λ[i]))
+        ps = cumsum(exp(-λ[i]) .* [λ[i]^k / factorial(k) for k in 0:ceiling])
         var"Y+1" = findfirst(x -> x > rand(), ps)
-        resp[i] = isnothing(var"Y+1") ? min(20, 2*λ[i]) : (var"Y+1" - 1)
+        resp[i] = isnothing(var"Y+1") ? ceiling : (var"Y+1" - 1)
     end
 
     return GeneralizedLinearModel(
