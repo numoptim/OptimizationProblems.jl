@@ -94,3 +94,55 @@ function PoissonRegression(;resp::Vector{Int64}, feat::Matrix{T},
         Poisson()
     )
 end
+
+function likelihood(
+    family::Poisson;
+    x::Vector{T},
+    resp::Int64,
+    feat::S where S<:AbstractVector
+) where T<:Real
+    η = dot(x, feat)
+    return T(-resp*η + exp(η))
+end
+
+function score!(
+    family::Poisson;
+    gradient::Vector{T},
+    x::Vector{T},
+    resp::Int64,
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where T<:Real
+    η = dot(x, feat)
+    view(gradient, params) .-= (resp - exp(η)) * view(feat, params)
+    return nothing 
+end
+
+function likelihoodscore!(
+    family::Poisson;
+    gradient::Vector{T},
+    x::Vector{T},
+    resp::Int64,
+    feat::S where S<:AbstractVector, 
+    params::AbstractVector{Int64}=eachindex(x)
+) where T<:Real
+    η = dot(x, feat) 
+    view(gradient, params) .-= (resp - exp(η)) * view(feat, params)
+    return T(-resp*η + exp(η))
+end
+
+function information!(
+    family::Poisson;
+    hessian::Matrix{T},
+    x::Vector{T},
+    resp::Int64, 
+    feat::S where S<:AbstractVector,
+    params::AbstractVector{Int64}=eachindex(x)
+) where T<:Real
+    η = dot(x, η)
+    view(hessian, params, params) .+= exp(η) * view(feat, params) * 
+        transpose(view(feat, params))
+    return nothign 
+end
+
+#TODO: Implement GNN weight, constant and coefficient
