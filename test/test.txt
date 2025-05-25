@@ -20,3 +20,7 @@ glm/partition_functions/exponential_partition.jl
 % Normal Response GLMs 
 glm/partition_functions/normal_constructors.jl
 glm/partition_functions/normal_partition.jl
+%
+% Poisson Response GLMs
+glm/partition_functions/poisson_constructors.jl
+glm/partition_functions/poisson_partition.jl
