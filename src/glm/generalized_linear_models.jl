@@ -78,6 +78,7 @@ include("partition_functions/bernoulli.jl") # Bernoulli
 include("partition_functions/binomial.jl") # Binomial
 include("partition_functions/exponential.jl") # Exponential
 include("partition_functions/normal.jl") # Normal
+include("partition_functions/poisson.jl") # Poisson
 
 
 # Preallocation
