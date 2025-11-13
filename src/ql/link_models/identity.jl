@@ -5,14 +5,14 @@ function link(
     return η
 end
 
-function der_lin(
+function der_link(
     model::Identity;
     η::T
 ) where T<:Real
     return T(1)
 end
 
-function der2_lin(
+function der2_link(
     model::Identity;
     η::T
 ) where T<:Real
