@@ -10,7 +10,7 @@ abstract type LinkModel end
 
 
 struct Identity <: LinkModel end 
-struct InvCompLogLog <: LinkFunction end 
+struct InvCompLogLog <: LinkModel end 
 struct Logistic <: LinkModel end 
 
 ######################################
@@ -70,9 +70,9 @@ struct WedderburnModel{R, F, G<:GLMFamily, L<:LinkFunction, V<:VarianceModel} <:
     integrator::Function 
 end
 
-######################################
-# Link and Variance Model  
-######################################
+###############################################
+# Import Link and Variance Model Functionality
+###############################################
 
 ######################################
 # Preallocation 
