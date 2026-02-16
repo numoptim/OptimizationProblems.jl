@@ -145,6 +145,28 @@ function allocate(
 end
 
 """
+    get_param_to_batch(
+        problem::GeneralizedLinearModel, 
+        store::Dict{Symbol, Any})
+
+Stores a dictionary in `store`, which maps an index of `x` to the
+    observations with non-zero features for that index. Speeds up
+    coordinate evaluations.
+"""
+function get_param_to_batch(
+    problem::GeneralizedLinearModel, 
+    store::Dict{Symbol, Any})
+
+    # create map and store
+    param_to_batch_map = Dict()
+    for i in 1:problem.num_param
+        param_to_batch_map[i] = [j for j in 1:problem.num_obs if problem.feat[j, i] != 0]
+    end
+    store[:param_to_batch] = param_to_batch_map
+    return nothing
+end
+
+"""
     obj!(problem::GeneralizedLinearModel; store::Dict{Symbol, Any},
         x::Vector{T}, reset::Bool=true, batch::AbstractVector{Int64}=
         Base.OneTo(problem.num_obs)
@@ -202,11 +224,20 @@ function grad!(
     increment_block!(problem.counters[:grad], size=length(block))
     
     # Compute Gradient 
-    reset && fill!(view(store[:grad], block), T(0.0))
-    for i in batch
-        score!(problem.family, gradient=store[:grad], x=x, 
-            resp=problem.resp[i], feat=view(problem.feat, i, :),
-            params=block)
+    if !haskey(store, :param_to_batch)
+        reset && fill!(view(store[:grad], block), T(0.0))
+        for i in batch
+            score!(problem.family, gradient=store[:grad], x=x, 
+                resp=problem.resp[i], feat=view(problem.feat, i, :),
+                params=block)
+        end
+    else
+        reset && fill!(view(store[:grad], block), T(0.0))
+        for i in store[:param_to_batch][block[1]]
+            score!(problem.family, gradient=store[:grad], x=x,
+                resp=problem.resp[i], feat=view(problem.feat, i, :), # i where feat[i,param] != 0
+                params=block)
+        end
     end
 
     return nothing
