@@ -141,6 +141,9 @@ function allocate(
     residual && push!(store, :residual=> zeros(type, problem.num_obs))
     jacobian && push!(store, :jacobian=> zeros(type, problem.num_obs, problem.num_param))
 
+    # for sparse
+    get_param_to_batch(problem, store)
+
     return store 
 end
 
