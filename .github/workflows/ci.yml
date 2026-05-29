@@ -54,8 +54,13 @@ jobs:
         with:
           version: '1'
       - uses: julia-actions/cache@v3
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.Registry.update(); Pkg.Registry.add(RegistrySpec(url="https://github.com/numoptim/NumOptimRegistry.git")); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - uses: julia-actions/julia-buildpkg@latest
+        with:
+          localregistry:
+            https://github.com/numoptim/NumOptimRegistry.git
+          git_cli: true
+      - name: Install doc dependencies
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
       - name: Build docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -122,8 +127,13 @@ jobs:
         with:
           version: '1'
       - uses: julia-actions/cache@v3
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.Registry.update(); Pkg.Registry.add(RegistrySpec(url="https://github.com/numoptim/NumOptimRegistry.git")); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - uses: julia-actions/julia-buildpkg@latest
+        with:
+          localregistry:
+            https://github.com/numoptim/NumOptimRegistry.git
+          git_cli: true
+      - name: Install doc dependencies
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
       - name: Deploy docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
