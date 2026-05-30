@@ -24,3 +24,7 @@ glm/partition_functions/normal_partition.jl
 % Poisson Response GLMs
 glm/partition_functions/poisson_constructors.jl
 glm/partition_functions/poisson_partition.jl
+%
+% Geometric Response GLMs
+glm/partition_functions/geometric_constructors.jl
+glm/partition_functions/geometric_partition.jl
