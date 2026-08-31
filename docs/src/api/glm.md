@@ -29,6 +29,14 @@ ExponentialRegression
 OptimizationProblems.Exponential
 ```
 
+# Geometric Regression Problem
+
+```@docs
+GeometricRegression
+
+OptimizationProblems.Geometric
+```
+
 # Linear Regression Problem 
 
 ```@docs 
