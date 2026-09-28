@@ -1,6 +1,10 @@
 """
-    GeometricRegression(::Type{T}; num_param::Int64, num_obs::Int64,
-        name::String="Geometric Regression") where T<:Real
+    GeometricRegression(
+        ::Type{T}; 
+        num_param::Int64, 
+        num_obs::Int64,
+        name::String="Geometric Regression"
+    ) where T<:Real
 
 Constructs a Geometric Regression problem with `num_param` parameters and
     `num_obs` observations.
@@ -10,12 +14,16 @@ Constructs a Geometric Regression problem with `num_param` parameters and
     The response is a vector of type `Int64` with non-negative values.
     Returns a `GeneralizedLinearModel{Vector{Int64}, Matrix{T}, Geometric}`.
 
-!!! warn
+!!! warning
     Under the GLM family, for a feature vector `feat` and parameter vector
     `x`, `dot(feat, x)` must be strictly negative.
 """
-function GeometricRegression(::Type{T}; num_param::Int64, num_obs::Int64,
-    name::String="Geometric Regression") where T<:Real
+function GeometricRegression(
+    ::Type{T}; 
+    num_param::Int64, 
+    num_obs::Int64,
+    name::String="Geometric Regression"
+) where T<:Real
 
     num_param < 1 && throw(ArgumentError("`num_param` must be at least one."))
     num_obs < 1 && throw(ArgumentError("`num_obs` must be at least one."))
