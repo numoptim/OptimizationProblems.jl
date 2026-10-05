@@ -41,6 +41,16 @@ second_der_lp(η) = 1/η^2
                 @test val == -resp*η + logpartition(η)
             end
 
+            # η = dot(x, feat) = ||x||^2 > 0
+            let resp=resp, x=x, feat=x
+                @test_throws DomainError OptimizationProblems.likelihood(
+                    eval(Meta.parse("OptimizationProblems.$family()")),
+                    x=x,
+                    resp=resp,
+                    feat=feat
+                )
+            end
+
             ##############################
             # Test Full Score Calculation 
             ##############################
@@ -60,6 +70,17 @@ second_der_lp(η) = 1/η^2
                 @test typeof(gradient) == Vector{type}
                 @test isapprox(gradient, -resp*feat + derivative_lp(η)*feat, 
                     atol=eps(type)*num_param)
+            end
+
+            # η = dot(x, feat) = ||x||^2 > 0
+            let gradient=zeros(type, num_param), resp=resp, x=x, feat=x
+                @test_throws DomainError OptimizationProblems.score!(
+                    eval(Meta.parse("OptimizationProblems.$family()")),
+                    gradient=gradient,
+                    x=x,
+                    resp=resp,
+                    feat=feat
+                )
             end
 
             ################################################################
@@ -113,6 +134,17 @@ second_der_lp(η) = 1/η^2
                     atol=eps(type)*num_param)
             end
 
+            # η = dot(x, feat) = ||x||^2 > 0
+            let gradient=zeros(type, num_param), resp=resp, x=x, feat=x
+                @test_throws DomainError OptimizationProblems.likelihoodscore!(
+                    eval(Meta.parse("OptimizationProblems.$family()")),
+                    gradient=gradient,
+                    x=x,
+                    resp=resp,
+                    feat=feat
+                )
+            end
+
             ##############################################################
             # Test Simultaneous Likelihood and Partial Score Calculations
             ##############################################################
@@ -164,6 +196,18 @@ second_der_lp(η) = 1/η^2
                 @test isapprox(hessian, 
                     second_der_lp(η)*feat*transpose(feat),
                     atol=sqrt(eps(type)*num_param)
+                )
+            end
+
+            # η = dot(x, feat) = ||x||^2 > 0
+            let hessian=zeros(type, num_param, num_param), resp=resp, x=x,
+                feat=x
+                @test_throws DomainError OptimizationProblems.information!(
+                    eval(Meta.parse("OptimizationProblems.$family()")),
+                    hessian=hessian,
+                    x=x,
+                    resp=resp,
+                    feat=feat
                 )
             end
 
