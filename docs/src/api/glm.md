@@ -45,6 +45,14 @@ LinearRegression
 OptimizationProblems.Normal
 ```
 
+# Negative Binomial Regression Problem
+
+```@docs
+NegativeBinomialRegression
+
+OptimizationProblems.NegativeBinomial
+```
+
 # Poisson Regression Problem
 
 ```@docs 
