@@ -5,7 +5,7 @@ using Test, OptimizationProblems
 family = :NegativeBinomial
 types = [Float16, Float32, Float64]
 constructor = NegativeBinomialRegression
-response_type(type) = Vector{Int64}
+response_type(type) = Vector{Tuple{Int64, Int64}}
 feature_type(type) = Matrix{type}
 
 @testset "Negative Binomial Regression Constructors" begin
@@ -27,6 +27,12 @@ feature_type(type) = Matrix{type}
         let num_param=1, num_obs=0
             @test_throws ArgumentError constructor(type,
                 num_param=num_param, num_obs=num_obs)
+        end
+
+        # Maximum number of successes should be at least one
+        let num_param=1, num_obs=10, max_successes=0
+            @test_throws ArgumentError constructor(type,
+                num_param=num_param, num_obs=num_obs, max_successes=max_successes)
         end
 
         # Verify unique fields of the problem and values
@@ -67,27 +73,32 @@ feature_type(type) = Matrix{type}
     for type in types
 
         # Number of parameters should be at least one
-        let resp=zeros(Int64, 10), feat=zeros(type, 10, 0)
+        let resp=Vector{Tuple{Int64, Int64}}(undef, 10), feat=zeros(type, 10, 0)
             @test_throws ArgumentError constructor(resp=resp, feat=feat)
         end
 
         # Number of observations should be at least one
-        let resp=zeros(Int64, 0), feat=zeros(type, 0, 3)
+        let resp=Vector{Tuple{Int64, Int64}}(undef, 0), feat=zeros(type, 0, 3)
             @test_throws ArgumentError constructor(resp=resp, feat=feat)
         end
 
         # Number of responses and number of observations in feature must match
-        let resp=zeros(Int64, 10), feat=zeros(type, 5, 3)
+        let resp=Vector{Tuple{Int64, Int64}}(undef, 10), feat=zeros(type, 5, 3)
             @test_throws DimensionMismatch constructor(resp=resp, feat=feat)
         end
 
-        # Observations must be non-negative
-        let resp=-ones(Int64, 10), feat=zeros(type, 10, 3)
+        # Number of failures must be non-negative
+        let resp=[(-1,1)], feat=zeros(type, 1, 1)
+            @test_throws DomainError constructor(resp=resp, feat=feat)
+        end
+
+        # Number of successes must be at least one
+        let resp=[(0,0)], feat=zeros(type, 1, 1)
             @test_throws DomainError constructor(resp=resp, feat=feat)
         end
 
         # Verify sizes and types
-        let resp=zeros(Int64, 1), feat=zeros(type, 1, 1)
+        let resp=Tuple{Int64, Int64}[(0, 1)], feat=zeros(type, 1, 1)
             problem = constructor(resp=resp, feat=feat)
 
             @test length(problem.resp) == 1
@@ -97,7 +108,7 @@ feature_type(type) = Matrix{type}
         end
 
         # Verify sizes and types
-        let resp=zeros(Int64, 1), feat=zeros(type, 1, 3)
+        let resp=Tuple{Int64, Int64}[(0, 1)], feat=zeros(type, 1, 3)
             problem = constructor(resp=resp, feat=feat)
 
             @test length(problem.resp) == 1
@@ -107,7 +118,7 @@ feature_type(type) = Matrix{type}
         end
 
         # Verify sizes and types
-        let resp=zeros(Int64, 10), feat=zeros(type, 10, 3)
+        let resp=repeat([(0,1)], 10), feat=zeros(type, 10, 3)
             problem = constructor(resp=resp, feat=feat)
 
             @test length(problem.resp) == 10

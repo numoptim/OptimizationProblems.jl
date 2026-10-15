@@ -3,14 +3,13 @@ module TestNegativeBinomialPartition
 using Test, OptimizationProblems, LinearAlgebra, Random
 
 family = :NegativeBinomial
-r = 2
 types = [Float16, Float32, Float64]
-responses(type) = round.(Int64, rand(3) .* 5)
+responses(type) = [(0, 1), (3, 2), (5, 3)]
 xs(type) = [-rand(type, 5), -rand(type, 10), -rand(type, 15)]
 feats(type) = [rand(type, 5), rand(type, 10), rand(type, 15)]
-logpartition(η) = -r * log(1 - exp(η))
-derivative_lp(η) = r * exp(η) / (1 - exp(η))
-second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
+logpartition(r, η) = -r * log(1 - exp(η))
+derivative_lp(r, η) = r * exp(η) / (1 - exp(η))
+second_der_lp(r, η) = r * exp(η) / (1 - exp(η))^2
 
 @testset "Negative Binomial Log Partition Function" begin
 
@@ -32,7 +31,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
 
                 # Calculate the likelihood using code base
                 val = OptimizationProblems.likelihood(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     x=x,
                     resp=resp,
                     feat=feat
@@ -40,14 +39,14 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
 
                 # Test likelihood calculation
                 @test typeof(val) == type
-                @test val == -resp*η + logpartition(η)
+                @test val == -resp[1]*η + logpartition(resp[2], η)
             end
 
             # η = dot(x, feat) = ||x||^2 > 0
             let resp=resp, x=x, feat=x
 
                 @test_throws DomainError OptimizationProblems.likelihood(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     x=x,
                     resp=resp,
                     feat=feat
@@ -63,7 +62,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # Calculate score function using code base
                 # Answer is stored in gradient.
                 OptimizationProblems.score!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     gradient=gradient,
                     x=x,
                     resp=resp,
@@ -72,7 +71,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
 
                 # Test score calculation
                 @test typeof(gradient) == Vector{type}
-                @test isapprox(gradient, -resp*feat + derivative_lp(η)*feat,
+                @test isapprox(gradient, -resp[1]*feat + derivative_lp(resp[2], η)*feat,
                     atol=eps(type)*num_param)
             end
 
@@ -80,7 +79,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
             let gradient=zeros(type, num_param), resp=resp, x=x, feat=x
 
                 @test_throws DomainError OptimizationProblems.score!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     gradient=gradient,
                     x=x,
                     resp=resp,
@@ -99,7 +98,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # parameters. Answer is stored in gradient[params],
                 # other terms should remain fixed.
                 OptimizationProblems.score!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     gradient=gradient,
                     x=x,
                     resp=resp,
@@ -109,8 +108,8 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
 
                 # Test score calculation
                 @test typeof(gradient) == Vector{type}
-                @test isapprox(gradient[params], -resp*feat[params] +
-                    derivative_lp(η)*feat[params], atol=eps(type)*num_param)
+                @test isapprox(gradient[params], -resp[1]*feat[params] +
+                    derivative_lp(resp[2], η)*feat[params], atol=eps(type)*num_param)
                 @test isapprox(norm(gradient) - norm(gradient[params]), 0,
                     atol=eps(type))
             end
@@ -123,7 +122,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # Calculate likelihood and score function using code base
                 # Likelihood is returned, score is stored in gradient.
                 val = OptimizationProblems.likelihoodscore!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     gradient=gradient,
                     x=x,
                     resp=resp,
@@ -132,11 +131,11 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
 
                 # Test likelihood calculation
                 @test typeof(val) == type
-                @test val == -resp*η + logpartition(η)
+                @test val == -resp[1]*η + logpartition(resp[2], η)
 
                 # Test score calculation
                 @test typeof(gradient) == Vector{type}
-                @test isapprox(gradient, -resp*feat + derivative_lp(η)*feat,
+                @test isapprox(gradient, -resp[1]*feat + derivative_lp(resp[2], η)*feat,
                     atol=eps(type)*num_param)
             end
 
@@ -144,7 +143,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
             let gradient=zeros(type, num_param), resp=resp, x=x, feat=x
 
                 @test_throws DomainError OptimizationProblems.likelihoodscore!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     gradient=gradient,
                     x=x,
                     resp=resp,
@@ -163,7 +162,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # Likelihood is returned, score is stored in gradient.
                 # Only indices in params are updated in gradient.
                 val = OptimizationProblems.likelihoodscore!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     gradient=gradient,
                     x=x,
                     resp=resp,
@@ -173,12 +172,12 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
 
                 # Test likelihood calculation
                 @test typeof(val) == type
-                @test val == -resp*η + logpartition(η)
+                @test val == -resp[1]*η + logpartition(resp[2], η)
 
                 # Test score calculation
                 @test typeof(gradient) == Vector{type}
-                @test isapprox(gradient[params], -resp*feat[params] +
-                    derivative_lp(η)*feat[params], atol=eps(type)*num_param)
+                @test isapprox(gradient[params], -resp[1]*feat[params] +
+                    derivative_lp(resp[2], η)*feat[params], atol=eps(type)*num_param)
                 @test isapprox(norm(gradient) - norm(gradient[params]), 0,
                     atol=eps(type))
             end
@@ -192,7 +191,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # Calculate the information matrix
                 # Solution should be updated to hessian
                 OptimizationProblems.information!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     hessian=hessian,
                     x=x,
                     resp=resp,
@@ -202,7 +201,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # Test hessian calculation
                 @test typeof(hessian) == Matrix{type}
                 @test isapprox(hessian,
-                    second_der_lp(η)*feat*transpose(feat),
+                    second_der_lp(resp[2], η)*feat*transpose(feat),
                     atol=sqrt(eps(type)*num_param)
                 )
             end
@@ -212,7 +211,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 feat=x
 
                 @test_throws DomainError OptimizationProblems.information!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     hessian=hessian,
                     x=x,
                     resp=resp,
@@ -230,7 +229,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # Calculate the information matrix
                 # Solution should be updated to hessian
                 OptimizationProblems.information!(
-                    eval(Meta.parse("OptimizationProblems.$family($r)")),
+                    eval(Meta.parse("OptimizationProblems.$family()")),
                     hessian=hessian,
                     x=x,
                     resp=resp,
@@ -241,7 +240,7 @@ second_der_lp(η) = r *exp(η) / (1 - exp(η))^2
                 # Test hessian calculation
                 @test typeof(hessian) == Matrix{type}
                 @test isapprox(hessian[params, params],
-                    second_der_lp(η)*feat[params]*transpose(feat[params]),
+                    second_der_lp(resp[2], η)*feat[params]*transpose(feat[params]),
                     atol=sqrt(eps(type)*num_param)
                 )
                 @test isapprox(norm(hessian) - norm(hessian[params, params]),

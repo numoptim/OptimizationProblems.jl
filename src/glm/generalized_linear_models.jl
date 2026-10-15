@@ -29,11 +29,8 @@ struct Exponential <: GLMFamily end
     NegativeBinomial <: GLMFamily
 
 A structure specifying a Negative Binomial response GLM.
-The parameter `r` specifies the number of successes until we stop counting failures.
 """
-struct NegativeBinomial <: GLMFamily
-    r::Int64
-end
+struct NegativeBinomial <: GLMFamily end
 """
     Geometric <: GLMFamily
 
