@@ -12,7 +12,7 @@ Constructs a Negative Binomial Regression problem with `num_param` parameters an
     The feature matrix has elements of type `T`.
     The feature matrix is a column of ones followed by `num_param-1` columns of
     independent uniform vectors on `(0, 1/(num_param-1))`.
-        Each response is a pair of integers, `(failures, successes)`. Think of
+    Each response is a pair of integers, `(failures, successes)`. Think of
     repeating a trial that either fails or succeeds, and stopping once a set
     number of successes is reached. The second integer is that number of
     successes, picked at random from 1 to `max_successes`. The first integer
@@ -88,7 +88,7 @@ Constructs a Negative Binomial Regression problem from a user-supplied response 
     happened before reaching them. Failures must be non-negative and successes must
     be at least one.
     Returns a `GeneralizedLinearModel{Vector{Tuple{Int64, Int64}}, Matrix{T},
-     NegativeBinomial}`.
+    NegativeBinomial}`.
 """
 function NegativeBinomialRegression(
     ; resp::Vector{Tuple{Int64, Int64}},
