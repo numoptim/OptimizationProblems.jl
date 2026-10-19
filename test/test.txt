@@ -28,3 +28,7 @@ glm/partition_functions/poisson_partition.jl
 % Geometric Response GLMs
 glm/partition_functions/geometric_constructors.jl
 glm/partition_functions/geometric_partition.jl
+%
+% Negative Binomial Response GLMs
+glm/partition_functions/negative_binomial_constructors.jl
+glm/partition_functions/negative_binomial_partition.jl

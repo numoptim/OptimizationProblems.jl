@@ -25,7 +25,12 @@ A structure specifying an Exponential response GLM.
 struct Exponential <: GLMFamily end 
 #struct MultinomialNominal <: GLMFamily end 
 #struct MultinomialOrdinal <: GLMFamily end 
-#struct NegativeBinomial <: GLMFamily end 
+"""
+    NegativeBinomial <: GLMFamily
+
+A structure specifying a Negative Binomial response GLM.
+"""
+struct NegativeBinomial <: GLMFamily end
 """
     Geometric <: GLMFamily
 
@@ -87,6 +92,7 @@ include("partition_functions/exponential.jl") # Exponential
 include("partition_functions/geometric.jl") # Geometric
 include("partition_functions/normal.jl") # Normal
 include("partition_functions/poisson.jl") # Poisson
+include("partition_functions/negative_binomial.jl") # Negative Binomial
 
 
 # Preallocation
