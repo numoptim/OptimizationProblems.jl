@@ -90,8 +90,8 @@ Constructs a Negative Binomial Regression problem from a user-supplied response 
     Returns a `GeneralizedLinearModel{Vector{Tuple{Int64, Int64}}, Matrix{T},
     NegativeBinomial}`.
 """
-function NegativeBinomialRegression(
-    ; resp::Vector{Tuple{Int64, Int64}},
+function NegativeBinomialRegression(;
+    resp::Vector{Tuple{Int64, Int64}},
     feat::Matrix{T},
     name::String="Negative Binomial Regression"
 ) where T<:Real
