@@ -22,7 +22,13 @@ struct Binomial <: GLMFamily end
 
 A structure specifying an Exponential response GLM.
 """
-struct Exponential <: GLMFamily end 
+struct Exponential <: GLMFamily end
+"""
+    InverseGaussian <: GLMFamily
+
+A structure specifying an Inverse Gaussian response GLM.
+"""
+struct InverseGaussian <: GLMFamily end
 #struct MultinomialNominal <: GLMFamily end 
 #struct MultinomialOrdinal <: GLMFamily end 
 """
@@ -90,6 +96,7 @@ include("partition_functions/bernoulli.jl") # Bernoulli
 include("partition_functions/binomial.jl") # Binomial
 include("partition_functions/exponential.jl") # Exponential
 include("partition_functions/geometric.jl") # Geometric
+include("partition_functions/inverse_gaussian.jl") # Inverse Gaussian
 include("partition_functions/normal.jl") # Normal
 include("partition_functions/poisson.jl") # Poisson
 include("partition_functions/negative_binomial.jl") # Negative Binomial
