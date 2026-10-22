@@ -14,6 +14,9 @@ makedocs(
             "Optimization Interface" => "api/interface.md",
             "Genearlized Linear Models" => "api/glm.md",
             "Quasi-Likelihood Models" => "api/ql.md",
+        ],
+        "Development" => [
+            "Docstring Style" => "dev/docstring-style/plan.md",
         ]
     ]
 )
