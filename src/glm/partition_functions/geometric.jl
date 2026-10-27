@@ -40,8 +40,9 @@ function GeometricRegression(
     # Compute linear effects
     η = feat * β
 
-    # Sample via inverse CDF: Y = floor(log(1-U) / η)
-    resp = floor.(Int64, log.(one(T) .- rand(T, num_obs)) ./ η)
+    # Sample via Distributions.jl, success probability p = 1 - exp(η)
+    p = one(T) .- exp.(η)
+    resp = rand.(Distributions.Geometric.(p))
 
     return GeneralizedLinearModel(
         name,
