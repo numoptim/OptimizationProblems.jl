@@ -50,10 +50,10 @@ function NegativeBinomialRegression(
 
     # Allocate response pairs (failures, successes)
     resp = Vector{Tuple{Int64, Int64}}(undef, num_obs)
-    # Sample: r successes, then failures as a sum of r Geometric draws
+    # Sample: r successes, then failures via Distributions.jl
     for i in Base.OneTo(num_obs)
         r = rand(1:max_successes)
-        y = sum(floor.(Int64, log.(one(T) .- rand(T, r)) ./ η[i]))
+        y = rand(Distributions.NegativeBinomial(r, one(T) - exp(η[i])))
         resp[i] = (y, r)
     end
 
