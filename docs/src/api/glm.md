@@ -37,6 +37,14 @@ GeometricRegression
 OptimizationProblems.Geometric
 ```
 
+# Inverse Gaussian Regression Problem
+
+```@docs
+InverseGaussianRegression
+
+OptimizationProblems.InverseGaussian
+```
+
 # Linear Regression Problem 
 
 ```@docs 

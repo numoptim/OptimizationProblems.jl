@@ -42,9 +42,9 @@ In that case, refer to [Julia Pkg instructions](
 - [x] Exponential Regression
 - [x] Normal (Linear) Regression
 - [x] Poisson Regression
-- [ ] Geometric Regression
-- [ ] Negative Binomial Regression
-- [ ] Inverse Gaussian Regression
+- [x] Geometric Regression
+- [x] Negative Binomial Regression
+- [x] Inverse Gaussian Regression
 
 ### Quasilikelihood / Wedderburn Models
 

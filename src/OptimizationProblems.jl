@@ -6,6 +6,7 @@ include("glm/generalized_linear_models.jl")
 
 export allocate, obj!, grad!, objgrad!, hess!
 export LogisticRegression, BinomialRegression, ExponentialRegression,
-    LinearRegression, PoissonRegression, GeometricRegression, NegativeBinomialRegression
+    LinearRegression, PoissonRegression, GeometricRegression, NegativeBinomialRegression,
+    InverseGaussianRegression
 
 end # module OptimizationProblems
