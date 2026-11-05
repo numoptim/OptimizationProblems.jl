@@ -12,8 +12,8 @@ Constructs an Inverse Gaussian Regression problem where the given number of
     Returns a `GeneralizedLinearModel{Vector{T}, Matrix{T}, InverseGaussian}`.
 
 !!! warning
-    Under the GLM family, for a feature vector `feat` and parameter vector
-    `x`, `dot(feat, x)` must be strictly negative.
+    Under Inverse Gaussian Regression models, for a feature vector `feat` and
+    parameter vector `x`, `dot(feat, x)` must be strictly negative.
 """
 function InverseGaussianRegression(
     ::Type{T};
@@ -71,8 +71,8 @@ Constructs an Inverse Gaussian Regression problem with a user-supplied response
     Returns a `GeneralizedLinearModel{Vector{T}, Matrix{T}, InverseGaussian}`.
 
 !!! warning
-    Under the GLM family, for a feature vector `feat` and parameter vector
-    `x`, `dot(feat, x)` must be strictly negative.
+    Under Inverse Gaussian Regression models, for a feature vector `feat` and
+    parameter vector `x`, `dot(feat, x)` must be strictly negative.
 """
 function InverseGaussianRegression(;
     resp::Vector{T},
